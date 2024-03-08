@@ -27,3 +27,5 @@ lint:
 seed:
 	docker-compose exec app npx prisma db seed
 
+db:
+	docker exec -it db bash

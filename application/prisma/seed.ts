@@ -2,16 +2,17 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 async function main() {
   await prisma.user.upsert({
-    where: { email: 'alice@prisma.io' },
+    where: { email: 'test_user_01@example.com' },
     update: {},
     create: {
-      email: 'alice@prisma.io',
-      nickName: 'Alice',
-      hashedPassword: '$2b$12$tg885CjGIz1qs1nN2KFmlu6XdEPc.ucVzx4dwe9thxqL/rpaqWY9C',
-      tasks: {
+      name: 'テストユーザゼロイチ',
+      employee_number: '00000001',
+      email: 'test_user_01@example.com',
+      password: '$2b$12$tg885CjGIz1qs1nN2KFmlu6XdEPc.ucVzx4dwe9thxqL/rpaqWY9C',
+      is_active: true,
+      groups: {
         create: {
-          title: '懸垂',
-          description: '広背筋と大円筋を鍛える種目',
+          name: '管理者',
         },
       },
     },
