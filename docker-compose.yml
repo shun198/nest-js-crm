@@ -27,6 +27,7 @@ services:
       dockerfile: containers/node/Dockerfile
     volumes:
       - ./application:/code
+      - node_modules_volume:/application/node_modules
     ports:
       - '5555:5555'
       - '8000:8000'
@@ -41,4 +42,5 @@ services:
         condition: service_healthy
 volumes:
   db_data:
+  node_modules_volume:
 

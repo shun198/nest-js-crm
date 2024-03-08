@@ -1,5 +1,7 @@
 prepare:
-	docker-compose up -d --build
+	docker-compose build
+	docker-compose run --rm app npm install
+	docker-compose up -d
 
 up:
 	docker-compose up -d
