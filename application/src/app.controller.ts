@@ -1,12 +1,18 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller()
+@ApiTags('users')
+@Controller('api/users')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  /**
+   *
+   * @returns all users
+   */
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  findAll(): string {
+    return 'This action returns all users';
   }
 }
