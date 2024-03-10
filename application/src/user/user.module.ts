@@ -1,17 +1,17 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from 'common/logger.middleware';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [
-    // この記述を書くことでnestjs/configのconfig.module.tsをimportできる
-    // https://github.com/nestjs/config/blob/master/lib/config.module.ts
     ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule, // PrismaModuleをimport
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [UserController],
+  providers: [UserService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
