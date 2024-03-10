@@ -6,10 +6,7 @@ import { LoggerMiddleware } from 'common/logger.middleware';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    PrismaModule, // PrismaModuleをimport
-  ],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule],
   controllers: [UserController],
   providers: [UserService],
 })

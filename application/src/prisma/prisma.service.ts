@@ -1,4 +1,3 @@
-// prisma.service.ts
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
@@ -15,6 +14,6 @@ export class PrismaService {
   }
 
   get user() {
-    return this.prisma.user; // PrismaClientのメソッドをそのまま利用する
+    return this.prisma.user;
   }
 }
