@@ -8,6 +8,12 @@ export class PrismaService {
   constructor() {
     this.prisma = new PrismaClient();
   }
+  // prismaを実行した時のSQLを確認できる
+  // constructor() {
+  //   this.prisma = new PrismaClient({
+  //     log: ['query'],
+  //   });
+  // }
 
   async onModuleDestroy() {
     await this.prisma.$disconnect();
