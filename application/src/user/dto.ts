@@ -1,15 +1,10 @@
-export class CreateUserDto {
-  name: string;
-  employee_number: string;
-  email: string;
-  password: string;
-  is_active?: boolean;
-}
+import { IsEmail, IsString, MaxLength } from 'class-validator';
 
 export class UpdateUserDto {
+  @IsString()
+  @MaxLength(255)
   name?: string;
-  employee_number?: string;
+
+  @IsEmail()
   email?: string;
-  password?: string;
-  is_active?: boolean;
 }
