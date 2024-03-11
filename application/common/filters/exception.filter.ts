@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-@Catch(HttpException) // @Catch() デコレータの適用、HttpException をハンドルすることを宣言
+@Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   // ExceptionFilter インターフェースの実装
   catch(exception: HttpException, host: ArgumentsHost) {
