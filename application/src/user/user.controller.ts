@@ -11,6 +11,8 @@ import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto, ToggleUserActiveDto, ChangePasswordDto } from './dto';
 import { ApiResponse } from '@nestjs/swagger';
+import { Groups } from 'common/decorators/auth/groups.decorators';
+import { Group } from 'common/decorators/auth/groups.enum';
 
 @ApiTags('users')
 @Controller('users')
@@ -50,6 +52,7 @@ export class UserController {
     return this.userService.change_user_details(Number(id), updateUserDto);
   }
 
+  @Groups(Group.ADMIN)
   @Patch(':id/toggle_user_active')
   toggle_user_active(
     @Param('id') id: string,
