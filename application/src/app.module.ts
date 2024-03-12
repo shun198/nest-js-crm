@@ -6,11 +6,14 @@ import { PrismaModule } from './prisma/prisma.module';
 import { LoggerMiddleware } from 'common/middleware/logger.middleware';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { MyMailerModule } from './mail/mail.module';
+import { MailController } from './mail/mail.controller';
+import { MyMailerService } from './mail/mail.service';
 
 @Module({
-  imports: [UserModule, PrismaModule],
-  controllers: [UserController, AppController],
-  providers: [UserService, AppService],
+  imports: [UserModule, PrismaModule, MyMailerModule],
+  controllers: [UserController, AppController, MailController],
+  providers: [UserService, AppService, MyMailerService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
