@@ -2,4 +2,4 @@
 set -eu
 
 npx prisma migrate dev
-npm run start:dev
+npm run start:debug

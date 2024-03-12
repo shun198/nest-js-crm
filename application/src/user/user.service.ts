@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateUserDto } from './dto';
+import { UpdateUserDto, ToggleUserActiveDto } from './dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async findAll() {
     const users = await this.prismaService.user.findMany({
@@ -29,15 +29,31 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const existingUser = await this.prismaService.user.findUnique({
+    const user = await this.prismaService.user.findUnique({
       where: { id },
     });
-    if (!existingUser) {
+    if (!user) {
       throw new NotFoundException(`ID:${id}を持つユーザは存在しません`);
     }
     return this.prismaService.user.update({
       where: { id },
       data: updateUserDto,
+    });
+  }
+
+  async toggle_user_active(
+    id: number,
+    toggleUserActiveDto: ToggleUserActiveDto,
+  ) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+    if (!user) {
+      throw new NotFoundException(`ID:${id}を持つユーザは存在しません`);
+    }
+    return this.prismaService.user.update({
+      where: { id },
+      data: toggleUserActiveDto,
     });
   }
 }

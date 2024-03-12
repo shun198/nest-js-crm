@@ -1,7 +1,7 @@
 import { Controller, Get, Body, Param, Patch } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
-import { UpdateUserDto } from './dto';
+import { UpdateUserDto, ToggleUserActiveDto } from './dto';
 import { ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('users')
@@ -37,5 +37,13 @@ export class UserController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(Number(id), updateUserDto);
+  }
+
+  @Patch(':id/toggle_user_active')
+  toggle_user_active(
+    @Param('id') id: string,
+    @Body() toggleUserActiveDto: ToggleUserActiveDto,
+  ) {
+    return this.userService.toggle_user_active(Number(id), toggleUserActiveDto);
   }
 }
