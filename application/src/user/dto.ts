@@ -17,3 +17,15 @@ export class ToggleUserActiveDto {
   @IsBoolean()
   is_active: boolean;
 }
+
+export class ChangePasswordDto {
+  @ApiProperty()
+  @IsString()
+  current_password: string;
+  @ApiProperty()
+  @IsString()
+  new_password: string;
+  @ApiProperty()
+  @IsString()
+  confirm_password: string;
+}

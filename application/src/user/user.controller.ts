@@ -1,7 +1,15 @@
-import { Controller, Get, Body, Param, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Param,
+  Post,
+  Patch,
+  HttpCode,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
-import { UpdateUserDto, ToggleUserActiveDto } from './dto';
+import { UpdateUserDto, ToggleUserActiveDto, ChangePasswordDto } from './dto';
 import { ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('users')
@@ -34,9 +42,12 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(Number(id), updateUserDto);
+  @Patch(':id/change_user_details')
+  change_user_details(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.change_user_details(Number(id), updateUserDto);
   }
 
   @Patch(':id/toggle_user_active')
@@ -45,5 +56,11 @@ export class UserController {
     @Body() toggleUserActiveDto: ToggleUserActiveDto,
   ) {
     return this.userService.toggle_user_active(Number(id), toggleUserActiveDto);
+  }
+
+  @Post('change_password')
+  @HttpCode(200)
+  change_password(@Body() changePasswordDto: ChangePasswordDto) {
+    return this.userService.change_password(changePasswordDto);
   }
 }
