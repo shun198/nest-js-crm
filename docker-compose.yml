@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  db:
+    container_name: db
+    build:
+      context: .
+      dockerfile: containers/postgres/Dockerfile
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U "${POSTGRES_USER:-postgres}" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_NAME
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    ports:
+      - '5432:5432' # デバッグ用
+
+  mail:
+    container_name: mail
+    image: schickling/mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
+volumes:
+  db_data:
+
