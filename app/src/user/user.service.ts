@@ -8,6 +8,7 @@ import { ToggleUserActiveDto } from './dto/toggleUserActive.dto';
 import { CreateUserDto } from './dto/createUser.dto';
 import { EmailService } from '../email/email.service';
 import { InviteUserDto } from './dto/inviteUser.dto';
+import { encodePassword } from 'src/common/bcrypt';
 
 @Injectable()
 export class UserService {
@@ -83,8 +84,9 @@ export class UserService {
     if (existingEmployeeNumberUser) {
       throw new BadRequestException('この社員番号はすでに使用されています');
     }
-    const user = await this.prismaService.user.create({ data });
-    return user;
+    const password = await encodePassword(data.password);
+    data.password = password;
+    await this.prismaService.user.create({ data });
   }
 
   async send_invite_user_email(data: InviteUserDto) {
@@ -97,5 +99,9 @@ export class UserService {
     //   throw new BadRequestException('認証済みのユーザです');
     // }
     this.emailService.welcomeEmail(data);
+  }
+
+  async login() {
+    console.log('login');
   }
 }
