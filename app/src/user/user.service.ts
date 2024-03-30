@@ -12,7 +12,6 @@ import { comparePassword, encodePassword } from 'src/common/bcrypt';
 import { VerifyUserDto } from './dto/VerifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
-import { check_invitation, check_reset_password } from 'src/common/check_token';
 
 @Injectable()
 export class UserService {
@@ -127,6 +126,8 @@ export class UserService {
         '新しいパスワードと確認用パスワードが一致していません',
       );
     }
+    //ユーザを取得し、ユーザとパスワードが一致していなかったら400を返す処理を書く
+    //一致したことを確認できたらパスワードを変更する
   }
 
   async resend_invitation(id: number) {
@@ -139,7 +140,9 @@ export class UserService {
   }
 
   async check_invite_user_token(data: CheckTokenDto) {
-    const check = check_invitation(data.token);
+    // tokenの値から一致するUserを取得。なかったら400を返す
+    // 有効期限が切れている、もしくは使用フラグがtrueだったら400を返す
+    const check = data.token;
     if (!check) {
       return null;
     }
@@ -147,7 +150,9 @@ export class UserService {
   }
 
   async check_reset_password_token(data: CheckTokenDto) {
-    const check = check_reset_password(data.token);
+    // tokenの値から一致するUserを取得。なかったら400を返す
+    // 有効期限が切れている、もしくは使用フラグがtrueだったら400を返す
+    const check = data.token;
     if (!check) {
       return null;
     }

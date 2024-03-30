@@ -7,6 +7,7 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { VerifyUserDto } from './dto/VerifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { InviteUserDto } from './dto/inviteUser.dto';
+import { CheckTokenDto } from './dto/checkToken.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -74,9 +75,15 @@ export class UserController {
     return this.userService.change_password(changePasswordDto);
   }
 
-  @Post(':id/resend_invitation')
+  @Post('check_invite_user_token')
   @HttpCode(HttpStatus.OK)
-  resend_invitation(@Param('id') id: string) {
-    return this.userService.resend_invitation(Number(id));
+  check_invite_user_token(@Body() data: CheckTokenDto) {
+    return this.userService.check_invite_user_token(data);
+  }
+
+  @Post('check_reset_password_token')
+  @HttpCode(HttpStatus.OK)
+  check_reset_password_token(@Body() data: CheckTokenDto) {
+    return this.userService.check_reset_password_token(data);
   }
 }
