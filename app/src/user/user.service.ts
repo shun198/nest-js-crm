@@ -8,7 +8,11 @@ import { ToggleUserActiveDto } from './dto/toggleUserActive.dto';
 import { CreateUserDto } from './dto/createUser.dto';
 import { EmailService } from '../email/email.service';
 import { InviteUserDto } from './dto/inviteUser.dto';
-import { encodePassword } from 'src/common/bcrypt';
+import { comparePassword, encodePassword } from 'src/common/bcrypt';
+import { VerifyUserDto } from './dto/VerifyUser.dto';
+import { ChangePasswordDto } from './dto/changePassword.dto';
+import { CheckTokenDto } from './dto/checkToken.dto';
+import { check_invitation, check_reset_password } from 'src/common/check_token';
 
 @Injectable()
 export class UserService {
@@ -99,5 +103,54 @@ export class UserService {
     //   throw new BadRequestException('認証済みのユーザです');
     // }
     this.emailService.welcomeEmail(data);
+  }
+
+  async verify_user(data: VerifyUserDto) {
+    const user = await this.prismaService.user.findUnique({
+      where: { employee_number: data.employee_number },
+    });
+    if (user) {
+      const matched = await comparePassword(data.password, user.password);
+      if (!matched) {
+        throw new BadRequestException(
+          '社員番号またはパスワードが間違っています',
+        );
+      }
+    } else {
+      throw new BadRequestException('社員番号またはパスワードが間違っています');
+    }
+  }
+
+  async change_password(data: ChangePasswordDto) {
+    if (data.password !== data.confirm_password) {
+      throw new BadRequestException(
+        '新しいパスワードと確認用パスワードが一致していません',
+      );
+    }
+  }
+
+  async resend_invitation(id: number) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+    if (!user) {
+      throw new NotFoundException(`ID:${id}を持つユーザは存在しません`);
+    }
+  }
+
+  async check_invite_user_token(data: CheckTokenDto) {
+    const check = check_invitation(data.token);
+    if (!check) {
+      return null;
+    }
+    return check;
+  }
+
+  async check_reset_password_token(data: CheckTokenDto) {
+    const check = check_reset_password(data.token);
+    if (!check) {
+      return null;
+    }
+    return check;
   }
 }

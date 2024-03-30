@@ -4,6 +4,8 @@ import { Get, Post, Patch, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ToggleUserActiveDto } from './dto/toggleUserActive.dto';
 import { CreateUserDto } from './dto/createUser.dto';
+import { VerifyUserDto } from './dto/VerifyUser.dto';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 import { InviteUserDto } from './dto/inviteUser.dto';
 
 @ApiTags('users')
@@ -56,7 +58,25 @@ export class UserController {
 
   @Post('send_invite_user_email')
   @HttpCode(HttpStatus.OK)
-  send_invite_user_email(@Body() inviteUserDto: InviteUserDto) {
-    return this.userService.send_invite_user_email(inviteUserDto);
+  send_invite_user_email(@Body() data: InviteUserDto) {
+    return this.userService.send_invite_user_email(data);
+  }
+
+  @Post('verify_user')
+  @HttpCode(HttpStatus.OK)
+  verify_user(@Body() verifyUserDto: VerifyUserDto) {
+    return this.userService.verify_user(verifyUserDto);
+  }
+
+  @Post('change_password')
+  @HttpCode(HttpStatus.OK)
+  change_password(@Body() changePasswordDto: ChangePasswordDto) {
+    return this.userService.change_password(changePasswordDto);
+  }
+
+  @Post(':id/resend_invitation')
+  @HttpCode(HttpStatus.OK)
+  resend_invitation(@Param('id') id: string) {
+    return this.userService.resend_invitation(Number(id));
   }
 }
