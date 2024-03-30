@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { Request, Response, NextFunction } from 'express';
@@ -10,6 +11,7 @@ async function bootstrap() {
     credentials: true,
     origin: [process.env.TRUSTED_ORIGINS],
   });
+  app.useGlobalPipes(new ValidationPipe());
   if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()
       .setTitle('Todo API Project')

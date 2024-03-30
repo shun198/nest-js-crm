@@ -1,8 +1,9 @@
-import { Controller, Param } from '@nestjs/common';
+import { Controller, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
-import { Get, Patch, Body } from '@nestjs/common';
+import { Get, Post, Patch, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ToggleUserActiveDto } from './dto/toggleUserActive.dto';
+import { CreateUserDto } from './dto/createUser.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -44,5 +45,11 @@ export class UserController {
     @Body() toggleUserActiveDto: ToggleUserActiveDto,
   ) {
     return this.userService.toggle_user_active(Number(id), toggleUserActiveDto);
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
   }
 }

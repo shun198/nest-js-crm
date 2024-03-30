@@ -1,13 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ToggleUserActiveDto } from './dto/toggleUserActive.dto';
+import { CreateUserDto } from './dto/createUser.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async findAll() {
-    const users = await this.prismaService.user.findMany({});
+    const users = await this.prismaService.user.findMany({
+      where: { is_superuser: false },
+    });
     return users.map((user) => ({
       id: user.id,
       name: user.name,
@@ -48,5 +55,30 @@ export class UserService {
       where: { id },
       data: toggleUserActiveDto,
     });
+  }
+
+  async create(data: CreateUserDto) {
+    const existingEmailUser = await this.prismaService.user.findUnique({
+      where: {
+        email: data.email,
+      },
+    });
+    if (existingEmailUser) {
+      throw new BadRequestException(
+        'このメールアドレスはすでに使用されています',
+      );
+    }
+    const existingEmployeeNumberUser = await this.prismaService.user.findUnique(
+      {
+        where: {
+          employee_number: data.employee_number,
+        },
+      },
+    );
+    if (existingEmployeeNumberUser) {
+      throw new BadRequestException('この社員番号はすでに使用されています');
+    }
+    const user = await this.prismaService.user.create({ data });
+    return user;
   }
 }
