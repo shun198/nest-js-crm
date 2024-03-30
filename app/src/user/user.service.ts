@@ -100,8 +100,4 @@ export class UserService {
     // }
     this.emailService.welcomeEmail(data);
   }
-
-  async login() {
-    console.log('login');
-  }
 }
