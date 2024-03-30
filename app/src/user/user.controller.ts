@@ -1,6 +1,6 @@
 import { Controller, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
-import { Get, Post, Patch, Body } from '@nestjs/common';
+import { Get, Post, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ToggleUserActiveDto } from './dto/toggleUserActive.dto';
 import { CreateUserDto } from './dto/createUser.dto';
@@ -38,12 +38,7 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(Number(id));
-  }
-
-  @Patch(':id/toggle_user_active')
+  @Post(':id/toggle_user_active')
   toggle_user_active(
     @Param('id') id: string,
     @Body() toggleUserActiveDto: ToggleUserActiveDto,

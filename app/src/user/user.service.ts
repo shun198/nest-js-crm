@@ -35,21 +35,6 @@ export class UserService {
     }));
   }
 
-  async findOne(id: number) {
-    const user = await this.prismaService.user.findUnique({
-      where: { id },
-      select: {
-        name: true,
-        employee_number: true,
-        email: true,
-      },
-    });
-    if (!user) {
-      throw new NotFoundException(`id:${id}を持つユーザは存在しません`);
-    }
-    return user;
-  }
-
   async toggle_user_active(
     id: number,
     toggleUserActiveDto: ToggleUserActiveDto,
@@ -141,6 +126,7 @@ export class UserService {
 
   async check_invite_user_token(data: CheckTokenDto) {
     // tokenの値から一致するUserを取得。なかったら400を返す
+    // select_relatedを使って取得する
     // 有効期限が切れている、もしくは使用フラグがtrueだったら400を返す
     const check = data.token;
     if (!check) {
@@ -151,6 +137,7 @@ export class UserService {
 
   async check_reset_password_token(data: CheckTokenDto) {
     // tokenの値から一致するUserを取得。なかったら400を返す
+    // select_relatedを使って取得する
     // 有効期限が切れている、もしくは使用フラグがtrueだったら400を返す
     const check = data.token;
     if (!check) {
