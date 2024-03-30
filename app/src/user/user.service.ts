@@ -6,10 +6,15 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ToggleUserActiveDto } from './dto/toggleUserActive.dto';
 import { CreateUserDto } from './dto/createUser.dto';
+import { EmailService } from '../email/email.service';
+import { InviteUserDto } from './dto/inviteUser.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
 
   async findAll() {
     const users = await this.prismaService.user.findMany({
@@ -80,5 +85,17 @@ export class UserService {
     }
     const user = await this.prismaService.user.create({ data });
     return user;
+  }
+
+  async send_invite_user_email(data: InviteUserDto) {
+    // const existingEmailUser = await this.prismaService.user.findUnique({
+    //   where: {
+    //     email: data.email,
+    //   },
+    // });
+    // if (!existingEmailUser && existingEmailUser.is_verified) {
+    //   throw new BadRequestException('認証済みのユーザです');
+    // }
+    this.emailService.welcomeEmail(data);
   }
 }

@@ -4,6 +4,7 @@ import { Get, Post, Patch, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ToggleUserActiveDto } from './dto/toggleUserActive.dto';
 import { CreateUserDto } from './dto/createUser.dto';
+import { InviteUserDto } from './dto/inviteUser.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -51,5 +52,11 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
+  }
+
+  @Post('send_invite_user_email')
+  @HttpCode(HttpStatus.OK)
+  send_invite_user_email(@Body() inviteUserDto: InviteUserDto) {
+    return this.userService.send_invite_user_email(inviteUserDto);
   }
 }

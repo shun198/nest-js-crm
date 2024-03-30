@@ -8,15 +8,18 @@ import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
+import { EmailModule } from './email/email.module';
+import { EmailService } from './email/email.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '../.env' }),
     UserModule,
     PrismaModule,
+    EmailModule,
   ],
   controllers: [AppController, UserController],
-  providers: [AppService, UserService, PrismaService],
+  providers: [AppService, UserService, PrismaService, EmailService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
