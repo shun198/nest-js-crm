@@ -9,7 +9,7 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { EmailService } from '../email/email.service';
 import { InviteUserDto } from './dto/inviteUser.dto';
 import { comparePassword, encodePassword } from 'src/common/bcrypt';
-import { VerifyUserDto } from './dto/VerifyUser.dto';
+import { VerifyUserDto } from './dto/verifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
 
@@ -78,14 +78,15 @@ export class UserService {
   }
 
   async send_invite_user_email(data: InviteUserDto) {
-    // const existingEmailUser = await this.prismaService.user.findUnique({
-    //   where: {
-    //     email: data.email,
-    //   },
-    // });
-    // if (!existingEmailUser && existingEmailUser.is_verified) {
-    //   throw new BadRequestException('認証済みのユーザです');
-    // }
+    const existingEmailUser = await this.prismaService.user.findUnique({
+      where: {
+        email: data.email,
+      },
+    });
+    if (existingEmailUser && existingEmailUser.is_verified) {
+      throw new BadRequestException('認証済みのユーザです');
+    }
+    // トークンを生成する処理をメール送信前に記載する
     this.emailService.welcomeEmail(data);
   }
 

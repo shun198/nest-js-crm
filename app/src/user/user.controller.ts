@@ -4,7 +4,7 @@ import { Get, Post, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ToggleUserActiveDto } from './dto/toggleUserActive.dto';
 import { CreateUserDto } from './dto/createUser.dto';
-import { VerifyUserDto } from './dto/VerifyUser.dto';
+import { VerifyUserDto } from './dto/verifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { InviteUserDto } from './dto/inviteUser.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
