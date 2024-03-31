@@ -13,15 +13,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Add Role column
 model User {
-  id              Int      @id @default(autoincrement())
-  name            String   @db.VarChar(255)
-  employee_number String   @unique @db.VarChar(8)
-  email           String   @unique
-  password        String   @db.VarChar(255)
-  is_active       Boolean  @default(true)
-  is_verified     Boolean  @default(false)
-  is_superuser    Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id              Int             @id @default(autoincrement())
+  name            String          @db.VarChar(255)
+  employee_number String          @unique @db.VarChar(8)
+  email           String          @unique
+  password        String          @db.VarChar(255)
+  is_active       Boolean         @default(true)
+  is_verified     Boolean         @default(false)
+  is_superuser    Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  invitations     Invitation[]
+  passwordResets  PasswordReset[]
+}
+
+// Create Invitation Token Table
+model Invitation {
+  id        Int      @id @default(autoincrement())
+  token     String   @db.VarChar(255)
+  is_used   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+// Create Password Reset Token Table
+model PasswordReset {
+  id        Int      @id @default(autoincrement())
+  token     String   @db.VarChar(255)
+  is_used   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
 }
