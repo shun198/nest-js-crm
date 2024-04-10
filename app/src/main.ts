@@ -14,8 +14,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()
-      .setTitle('Todo API Project')
-      .setDescription('Todo API description')
+      .setTitle('CRM API Project')
+      .setDescription('CRM API description')
       .setVersion('1.0')
       .build();
     const document = SwaggerModule.createDocument(app, config);

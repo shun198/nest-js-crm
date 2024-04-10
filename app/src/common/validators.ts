@@ -5,7 +5,7 @@ import {
 
 @ValidatorConstraint({ name: 'isEmployeeNumber' })
 export class IsEmployeeNumber implements ValidatorConstraintInterface {
-  validate(text: string) {
+  validate(text: string): Promise<boolean> | boolean {
     // 8桁の数字のみを許容する正規表現パターン
     const pattern = /^\d{8}$/;
     return typeof text === 'string' && pattern.test(text);
