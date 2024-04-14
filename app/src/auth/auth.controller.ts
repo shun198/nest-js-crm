@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
-import { logInUserDto } from './dto/loginUser.dto';
+import { LogInUserDto } from './dto/loginUser.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 
@@ -21,8 +21,11 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async logIn(@Body() logInIUserDto: logInUserDto, @Res() response: Response) {
-    const user = await this.authService.logIn(logInIUserDto);
+  async logIn(@Body() logInUserDto: LogInUserDto, @Res() response: Response) {
+    const user = await this.authService.validateUser(
+      logInUserDto.employee_number,
+      logInUserDto.password,
+    );
     response.status(HttpStatus.OK).json({ name: user.name });
   }
 }

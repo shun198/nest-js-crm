@@ -13,7 +13,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(employee_number: string, password: string): Promise<any> {
     const user = await this.authService.validateUser(employee_number, password);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(
+        '社員番号またはパスワードが間違っています',
+      );
     }
     return user;
   }

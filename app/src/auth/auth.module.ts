@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LocalStrategy } from '../common/localStrategy';
 
 @Module({
-  imports: [PrismaModule, PassportModule],
+  imports: [PrismaModule, PassportModule.register({ session: true })],
   controllers: [AuthController],
   providers: [AuthService, PrismaService, LocalStrategy],
 })
