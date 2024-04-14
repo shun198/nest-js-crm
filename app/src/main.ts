@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import * as pgSession from 'connect-pg-simple';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -9,8 +10,14 @@ import { Request, Response, NextFunction } from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
+  const pgSessionStore = pgSession(session);
+  // https://github.com/voxpelli/node-connect-pg-simple?tab=readme-ov-file#connection-options
   app.use(
     session({
+      store: new pgSessionStore({
+        conString: process.env.DATABASE_URL,
+        createTableIfMissing: true,
+      }),
       secret: process.env.SECRET_KEY,
       resave: false,
       saveUninitialized: false,

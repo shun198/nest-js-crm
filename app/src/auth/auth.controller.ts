@@ -4,10 +4,10 @@ import {
   Post,
   HttpCode,
   HttpStatus,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LogInUserDto } from './dto/loginUser.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -21,11 +21,22 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async logIn(@Body() logInUserDto: LogInUserDto, @Res() response: Response) {
+  async logIn(
+    @Body() logInUserDto: LogInUserDto,
+    @Req() request: any,
+    @Res() response: any,
+  ) {
     const user = await this.authService.validateUser(
       logInUserDto.employee_number,
       logInUserDto.password,
     );
+    request.session.user = user;
     response.status(HttpStatus.OK).json({ name: user.name });
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Req() request: any): Promise<void> {
+    request.session.destroy();
   }
 }
