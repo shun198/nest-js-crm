@@ -7,7 +7,7 @@ export async function encodePassword(rawPassword: string): Promise<string> {
 
 export async function comparePassword(
   rawPassword: string,
-  hash: string,
+  hashedPassword: string,
 ): Promise<boolean> {
-  return bcrypt.compareSync(rawPassword, hash);
+  return bcrypt.compareSync(rawPassword, hashedPassword);
 }

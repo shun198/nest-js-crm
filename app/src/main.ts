@@ -1,4 +1,6 @@
 import { NestFactory } from '@nestjs/core';
+import * as session from 'express-session';
+import * as passport from 'passport';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -7,6 +9,18 @@ import { Request, Response, NextFunction } from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
+  app.use(
+    session({
+      secret: process.env.SECRET_KEY,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 60 * 60 * 1000, // 1hour
+      },
+    }),
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
   app.enableCors({
     credentials: true,
     origin: [process.env.TRUSTED_ORIGINS],
