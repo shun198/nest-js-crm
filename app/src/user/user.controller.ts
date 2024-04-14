@@ -1,13 +1,22 @@
-import { Controller, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Get,
+  Post,
+  Patch,
+  Body,
+  Controller,
+  Param,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
-import { Get, Post, Patch, Body } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ToggleUserActiveDto } from './dto/toggleUserActive.dto';
 import { CreateUserDto } from './dto/createUser.dto';
 import { VerifyUserDto } from './dto/verifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { InviteUserDto } from './dto/inviteUser.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
+import { AdminAuthGuard } from 'src/guards/admin-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -15,6 +24,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
+  @UseGuards(AdminAuthGuard)
   @ApiResponse({
     status: 200,
     description: 'ユーザを一覧表示',
@@ -39,12 +49,10 @@ export class UserController {
   }
 
   @Patch(':id/toggle_user_active')
+  @UseGuards(AdminAuthGuard)
   @HttpCode(HttpStatus.OK)
-  toggle_user_active(
-    @Param('id') id: string,
-    @Body() toggleUserActiveDto: ToggleUserActiveDto,
-  ) {
-    return this.userService.toggle_user_active(Number(id), toggleUserActiveDto);
+  toggle_user_active(@Param('id') id: string) {
+    return this.userService.toggle_user_active(Number(id));
   }
 
   @Post()
@@ -55,8 +63,8 @@ export class UserController {
 
   @Post('send_invite_user_email')
   @HttpCode(HttpStatus.OK)
-  send_invite_user_email(@Body() data: InviteUserDto) {
-    return this.userService.send_invite_user_email(data);
+  send_invite_user_email(@Body() inviteUserDto: InviteUserDto) {
+    return this.userService.send_invite_user_email(inviteUserDto);
   }
 
   @Post('verify_user')
@@ -73,13 +81,13 @@ export class UserController {
 
   @Post('check_invite_user_token')
   @HttpCode(HttpStatus.OK)
-  check_invite_user_token(@Body() data: CheckTokenDto) {
-    return this.userService.check_invite_user_token(data);
+  check_invite_user_token(@Body() checkTokenDto: CheckTokenDto) {
+    return this.userService.check_invite_user_token(checkTokenDto);
   }
 
   @Post('check_reset_password_token')
   @HttpCode(HttpStatus.OK)
-  check_reset_password_token(@Body() data: CheckTokenDto) {
-    return this.userService.check_reset_password_token(data);
+  check_reset_password_token(@Body() checkTokenDto: CheckTokenDto) {
+    return this.userService.check_reset_password_token(checkTokenDto);
   }
 }

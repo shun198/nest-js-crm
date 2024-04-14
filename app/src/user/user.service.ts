@@ -2,9 +2,10 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
+  Scope,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ToggleUserActiveDto } from './dto/toggleUserActive.dto';
 import { CreateUserDto } from './dto/createUser.dto';
 import { EmailService } from '../email/email.service';
 import { InviteUserDto } from './dto/inviteUser.dto';
@@ -12,12 +13,18 @@ import { comparePassword, encodePassword } from 'src/common/bcrypt';
 import { VerifyUserDto } from './dto/verifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
+import { Request } from 'express';
+import { REQUEST } from '@nestjs/core';
 
-@Injectable()
+// https://stackoverflow.com/questions/54979729/howto-get-req-user-in-services-in-nest-js
+// https://docs.nestjs.com/fundamentals/injection-scopes#request-provider
+
+@Injectable({ scope: Scope.REQUEST })
 export class UserService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly emailService: EmailService,
+    @Inject(REQUEST) private request: Request,
   ) {}
 
   async findAll() {
@@ -29,25 +36,28 @@ export class UserService {
       name: user.name,
       employee_number: user.employee_number,
       email: user.email,
+      role: user.role,
       is_active: user.is_active,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     }));
   }
 
-  async toggle_user_active(
-    id: number,
-    toggleUserActiveDto: ToggleUserActiveDto,
-  ) {
+  async toggle_user_active(id: number) {
     const user = await this.prismaService.user.findUnique({
       where: { id },
     });
     if (!user) {
       throw new NotFoundException(`ID:${id}を持つユーザは存在しません`);
     }
-    return this.prismaService.user.update({
+    if (user.id === this.request.session['user'].id) {
+      throw new BadRequestException('自身を無効化することはできません');
+    }
+    await this.prismaService.user.update({
       where: { id },
-      data: toggleUserActiveDto,
+      data: {
+        is_active: !user.is_active,
+      },
     });
   }
 
