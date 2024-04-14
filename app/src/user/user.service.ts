@@ -9,7 +9,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/createUser.dto';
 import { EmailService } from '../email/email.service';
 import { InviteUserDto } from './dto/inviteUser.dto';
-import { comparePassword, encodePassword } from 'src/common/bcrypt';
+import { comparePassword, encodePassword } from '../common/bcrypt';
 import { VerifyUserDto } from './dto/verifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
@@ -122,8 +122,14 @@ export class UserService {
         '新しいパスワードと確認用パスワードが一致していません',
       );
     }
-    //ユーザを取得し、ユーザとパスワードが一致していなかったら400を返す処理を書く
+    //requestからユーザを取得し、ユーザとパスワードが一致していなかったら400を返す処理を書く
     //一致したことを確認できたらパスワードを変更する
+    await this.prismaService.user.update({
+      where: { id: this.request.session['user'].id },
+      data: {
+        password: await encodePassword(data.password),
+      },
+    });
   }
 
   async resend_invitation(id: number) {

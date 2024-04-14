@@ -11,9 +11,9 @@ export class AuthService {
       where: { employee_number },
     });
 
-    if (user && user.is_active && comparePassword(password, user.password)) {
-      const { ...result } = user;
-      return result;
+    const matched = await comparePassword(password, user.password);
+    if (user && user.is_active && matched) {
+      return user;
     }
 
     return null;

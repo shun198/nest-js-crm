@@ -17,6 +17,7 @@ import { ChangePasswordDto } from './dto/changePassword.dto';
 import { InviteUserDto } from './dto/inviteUser.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
 import { AdminAuthGuard } from 'src/guards/admin-auth.guard';
+import { UserAuthGuard } from 'src/guards/user-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -74,6 +75,7 @@ export class UserController {
   }
 
   @Post('change_password')
+  @UseGuards(UserAuthGuard)
   @HttpCode(HttpStatus.OK)
   change_password(@Body() changePasswordDto: ChangePasswordDto) {
     return this.userService.change_password(changePasswordDto);
