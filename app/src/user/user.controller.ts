@@ -20,6 +20,7 @@ import { AdminAuthGuard } from 'src/guards/admin-auth.guard';
 import { UserAuthGuard } from 'src/guards/user-auth.guard';
 import { InviteUserDto } from './dto/inviteUser.dto';
 import { ChangeUserDetailsDto } from './dto/changeUserDetails.dto';
+import { SendResetPasswordMailDto } from './dto/sendResetPasswordMail.dto';
 
 @ApiTags('users')
 @Controller('admin/users')
@@ -113,6 +114,21 @@ export class UserController {
   @UseGuards(UserAuthGuard)
   @HttpCode(HttpStatus.OK)
   change_password(@Body() changePasswordDto: ChangePasswordDto) {
+    return this.userService.change_password(changePasswordDto);
+  }
+
+  @Post('send_reset_password_mail')
+  @UseGuards(UserAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  send_reset_password_mail(
+    @Body() sendResetPasswordMailDto: SendResetPasswordMailDto,
+  ) {
+    return this.userService.send_reset_password_mail(sendResetPasswordMailDto);
+  }
+
+  @Post('reset_password')
+  @HttpCode(HttpStatus.OK)
+  reset_password(@Body() changePasswordDto: ChangePasswordDto) {
     return this.userService.change_password(changePasswordDto);
   }
 

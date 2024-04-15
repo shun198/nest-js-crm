@@ -16,7 +16,7 @@ export class EmailService {
     });
   }
 
-  async forgotPasswordEmail(data) {
+  async resetPasswordEmail(data) {
     const { name, email, link } = data;
 
     const subject = `Company: Reset Password`;
@@ -24,7 +24,7 @@ export class EmailService {
     await this.mailerService.sendMail({
       to: email,
       subject,
-      template: './forgot-password',
+      template: './reset-password',
       context: {
         link,
         name,
@@ -32,7 +32,7 @@ export class EmailService {
     });
   }
 
-  async verifyEmail(data) {
+  async verifyUserEmail(data) {
     const { name, email, otp } = data;
 
     const subject = `Company: OTP To Verify Email`;

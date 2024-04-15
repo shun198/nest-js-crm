@@ -16,6 +16,8 @@ import { CheckTokenDto } from './dto/checkToken.dto';
 import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
 import { ChangeUserDetailsDto } from './dto/changeUserDetails.dto';
+import { SendResetPasswordMailDto } from './dto/sendResetPasswordMail.dto';
+import { generate_token } from '../common/create-token';
 
 // https://stackoverflow.com/questions/54979729/howto-get-req-user-in-services-in-nest-js
 // https://docs.nestjs.com/fundamentals/injection-scopes#request-provider
@@ -122,8 +124,17 @@ export class UserService {
       throw new BadRequestException('認証済みのユーザです');
     }
     // ユーザを作成する
-    // const user = this.prismaService.user.create({ data });
-    // トークンを生成する処理をメール送信前に記載する
+    const updatedData = {
+      ...data,
+      password: 'test', // 新しいパスワードを追加
+    };
+    const user = this.prismaService.user.create({ data: updatedData });
+    console.log(user);
+    // トークンを生成する
+    const token = generate_token(32);
+    console.log(token);
+    // 有効期限を追加
+    // Invitationテーブルにトークンとexpiryを追加
     this.emailService.welcomeEmail(data);
   }
 
@@ -167,6 +178,10 @@ export class UserService {
         password: await encodePassword(data.password),
       },
     });
+  }
+
+  async send_reset_password_mail(data: SendResetPasswordMailDto) {
+    console.log(data);
   }
 
   async check_invite_user_token(data: CheckTokenDto) {
