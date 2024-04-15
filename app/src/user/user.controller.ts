@@ -8,19 +8,20 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/createUser.dto';
 import { VerifyUserDto } from './dto/verifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
-import { InviteUserDto } from './dto/inviteUser.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
 import { AdminAuthGuard } from 'src/guards/admin-auth.guard';
 import { UserAuthGuard } from 'src/guards/user-auth.guard';
+import { InviteUserDto } from './dto/inviteUser.dto';
 
 @ApiTags('users')
-@Controller('users')
+@Controller('admin/users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -49,6 +50,15 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('user_info')
+  async user_info(@Res() response: any) {
+    const user = await this.userService.user_info();
+    if (!user) {
+      response.status(HttpStatus.OK).json({ name: null, role: null });
+    }
+    response.status(HttpStatus.OK).json({ name: user.name, role: user.role });
+  }
+
   @Patch(':id/toggle_user_active')
   @UseGuards(AdminAuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -62,10 +72,24 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @Patch(':id/change_user_details')
+  change_user_details(
+    @Param('id') id: string,
+    @Body() createUserDto: CreateUserDto,
+  ) {
+    return this.userService.create(createUserDto);
+  }
+
   @Post('send_invite_user_email')
   @HttpCode(HttpStatus.OK)
   send_invite_user_email(@Body() inviteUserDto: InviteUserDto) {
     return this.userService.send_invite_user_email(inviteUserDto);
+  }
+
+  @Post(':id/resend_invitation')
+  @HttpCode(HttpStatus.OK)
+  resend_invitation(@Param('id') id: string) {
+    return this.userService.resend_invitation(Number(id));
   }
 
   @Post('verify_user')

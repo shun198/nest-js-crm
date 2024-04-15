@@ -43,6 +43,16 @@ export class UserService {
     }));
   }
 
+  async user_info() {
+    if (this.request.session['user']) {
+      const user = await this.prismaService.user.findUnique({
+        where: { id: this.request.session['user'].id },
+      });
+      return user;
+    }
+    return null;
+  }
+
   async toggle_user_active(id: number) {
     const user = await this.prismaService.user.findUnique({
       where: { id },
@@ -96,8 +106,20 @@ export class UserService {
     if (existingEmailUser && existingEmailUser.is_verified) {
       throw new BadRequestException('認証済みのユーザです');
     }
+    // ユーザを作成する
+    // const user = this.prismaService.user.create({ data });
     // トークンを生成する処理をメール送信前に記載する
     this.emailService.welcomeEmail(data);
+  }
+
+  async resend_invitation(id: number) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+    if (!user) {
+      throw new NotFoundException(`ID:${id}を持つユーザは存在しません`);
+    }
+    // this.emailService.welcomeEmail(user.email);
   }
 
   async verify_user(data: VerifyUserDto) {
@@ -130,15 +152,6 @@ export class UserService {
         password: await encodePassword(data.password),
       },
     });
-  }
-
-  async resend_invitation(id: number) {
-    const user = await this.prismaService.user.findUnique({
-      where: { id },
-    });
-    if (!user) {
-      throw new NotFoundException(`ID:${id}を持つユーザは存在しません`);
-    }
   }
 
   async check_invite_user_token(data: CheckTokenDto) {
