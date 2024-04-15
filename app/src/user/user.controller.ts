@@ -19,6 +19,7 @@ import { CheckTokenDto } from './dto/checkToken.dto';
 import { AdminAuthGuard } from 'src/guards/admin-auth.guard';
 import { UserAuthGuard } from 'src/guards/user-auth.guard';
 import { InviteUserDto } from './dto/inviteUser.dto';
+import { ChangeUserDetailsDto } from './dto/changeUserDetails.dto';
 
 @ApiTags('users')
 @Controller('admin/users')
@@ -73,20 +74,30 @@ export class UserController {
   }
 
   @Patch(':id/change_user_details')
-  change_user_details(
+  @UseGuards(AdminAuthGuard)
+  async change_user_details(
     @Param('id') id: string,
-    @Body() createUserDto: CreateUserDto,
+    @Res() response: any,
+    @Body() changeUserDetails: ChangeUserDetailsDto,
   ) {
-    return this.userService.create(createUserDto);
+    const user = await this.userService.change_user_details(
+      Number(id),
+      changeUserDetails,
+    );
+    response
+      .status(HttpStatus.OK)
+      .json({ name: user.name, email: user.email, role: user.role });
   }
 
   @Post('send_invite_user_email')
+  @UseGuards(AdminAuthGuard)
   @HttpCode(HttpStatus.OK)
   send_invite_user_email(@Body() inviteUserDto: InviteUserDto) {
     return this.userService.send_invite_user_email(inviteUserDto);
   }
 
   @Post(':id/resend_invitation')
+  @UseGuards(AdminAuthGuard)
   @HttpCode(HttpStatus.OK)
   resend_invitation(@Param('id') id: string) {
     return this.userService.resend_invitation(Number(id));

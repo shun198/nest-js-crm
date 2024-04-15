@@ -15,6 +15,7 @@ import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
 import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
+import { ChangeUserDetailsDto } from './dto/changeUserDetails.dto';
 
 // https://stackoverflow.com/questions/54979729/howto-get-req-user-in-services-in-nest-js
 // https://docs.nestjs.com/fundamentals/injection-scopes#request-provider
@@ -95,6 +96,20 @@ export class UserService {
     const password = await encodePassword(data.password);
     data.password = password;
     await this.prismaService.user.create({ data });
+  }
+
+  async change_user_details(id: number, data: ChangeUserDetailsDto) {
+    const existingUser = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+    if (!existingUser) {
+      throw new NotFoundException(`ID:${id}を持つユーザは存在しません`);
+    }
+    const updatedUser = await this.prismaService.user.update({
+      where: { id },
+      data: data,
+    });
+    return updatedUser;
   }
 
   async send_invite_user_email(data: InviteUserDto) {
