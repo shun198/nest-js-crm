@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/createUser.dto';
 import { VerifyUserDto } from './dto/verifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
@@ -42,6 +41,7 @@ export class UserController {
             employee_number: '00000001',
             email: 'test_user_01@example.com',
             is_active: true,
+            is_verified: true,
             createdAt: '2024-03-08T00:33:27.790Z',
             updatedAt: '2024-03-08T00:33:27.790Z',
           },
@@ -67,12 +67,6 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   toggle_user_active(@Param('id') id: string) {
     return this.userService.toggle_user_active(Number(id));
-  }
-
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
   }
 
   @Patch(':id/change_user_details')

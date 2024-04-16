@@ -14,6 +14,7 @@ async function main() {
       role: Role.ADMIN,
       password: await encodePassword('test'),
       is_active: true,
+      is_verified: true,
     },
   });
   await prisma.user.upsert({
@@ -26,6 +27,7 @@ async function main() {
       role: Role.GENERAL,
       password: await encodePassword('test'),
       is_active: true,
+      is_verified: true,
     },
   });
 }

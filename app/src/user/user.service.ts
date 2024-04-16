@@ -6,7 +6,6 @@ import {
   Scope,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserDto } from './dto/createUser.dto';
 import { EmailService } from '../email/email.service';
 import { InviteUserDto } from './dto/inviteUser.dto';
 import { encodePassword } from '../common/bcrypt';
@@ -42,6 +41,7 @@ export class UserService {
       email: user.email,
       role: user.role,
       is_active: user.is_active,
+      is_verified: user.is_verified,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     }));
@@ -73,32 +73,6 @@ export class UserService {
         is_active: !user.is_active,
       },
     });
-  }
-
-  async create(data: CreateUserDto) {
-    const existingEmailUser = await this.prismaService.user.findUnique({
-      where: {
-        email: data.email,
-      },
-    });
-    if (existingEmailUser) {
-      throw new BadRequestException(
-        'このメールアドレスはすでに使用されています',
-      );
-    }
-    const existingEmployeeNumberUser = await this.prismaService.user.findUnique(
-      {
-        where: {
-          employee_number: data.employee_number,
-        },
-      },
-    );
-    if (existingEmployeeNumberUser) {
-      throw new BadRequestException('この社員番号はすでに使用されています');
-    }
-    const password = await encodePassword(data.password);
-    data.password = password;
-    await this.prismaService.user.create({ data });
   }
 
   async change_user_details(id: number, data: ChangeUserDetailsDto) {
