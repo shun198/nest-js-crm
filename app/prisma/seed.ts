@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Role } from '@prisma/client';
+import { encodePassword } from '../src/common/bcrypt';
 
 const prisma = new PrismaClient();
 async function main() {
@@ -11,7 +12,7 @@ async function main() {
       employee_number: '00000001',
       email: 'test_user_01@example.com',
       role: Role.ADMIN,
-      password: '$2b$12$tg885CjGIz1qs1nN2KFmlu6XdEPc.ucVzx4dwe9thxqL/rpaqWY9C',
+      password: await encodePassword('test'),
       is_active: true,
     },
   });
@@ -23,7 +24,7 @@ async function main() {
       employee_number: '00000002',
       email: 'test_user_02@example.com',
       role: Role.GENERAL,
-      password: '$2b$12$tg885CjGIz1qs1nN2KFmlu6XdEPc.ucVzx4dwe9thxqL/rpaqWY9C',
+      password: await encodePassword('test'),
       is_active: true,
     },
   });

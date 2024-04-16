@@ -126,16 +126,29 @@ export class UserService {
     // ユーザを作成する
     const updatedData = {
       ...data,
-      password: 'test', // 新しいパスワードを追加
+      password: generate_token(32),
     };
-    const user = this.prismaService.user.create({ data: updatedData });
-    console.log(user);
+    const user = await this.prismaService.user.create({ data: updatedData });
     // トークンを生成する
-    const token = generate_token(32);
-    console.log(token);
+    const token: string = generate_token(32);
+    const now: Date = new Date();
+    const expiry: Date = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    await this.prismaService.invitation.create({
+      data: {
+        token,
+        expiry,
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
+    const url = `${process.env.BASE_URL}/password/register/${token}`;
+    console.log(url);
     // 有効期限を追加
     // Invitationテーブルにトークンとexpiryを追加
-    this.emailService.welcomeEmail(data);
+    this.emailService.welcomeEmail(user.email, url, user.name, expiry);
   }
 
   async resend_invitation(id: number) {
@@ -145,7 +158,11 @@ export class UserService {
     if (!user) {
       throw new NotFoundException(`ID:${id}を持つユーザは存在しません`);
     }
-    // this.emailService.welcomeEmail(user.email);
+    // トークンを生成する
+    const token: string = generate_token(32);
+    const url = `${process.env.BASE_URL}/password/register/${token}`;
+    console.log(url);
+    // this.emailService.welcomeEmail(user.email, url, user.name, expiry);
   }
 
   async verify_user(data: VerifyUserDto) {
@@ -182,6 +199,10 @@ export class UserService {
 
   async send_reset_password_mail(data: SendResetPasswordMailDto) {
     console.log(data);
+    // トークンを生成する
+    const token: string = generate_token(32);
+    const url = `${process.env.BASE_URL}/password/reset/${token}`;
+    console.log(url);
   }
 
   async check_invite_user_token(data: CheckTokenDto) {

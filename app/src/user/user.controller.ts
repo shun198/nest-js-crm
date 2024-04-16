@@ -91,7 +91,7 @@ export class UserController {
   }
 
   @Post('send_invite_user_email')
-  @UseGuards(AdminAuthGuard)
+  //@UseGuards(AdminAuthGuard)
   @HttpCode(HttpStatus.OK)
   send_invite_user_email(@Body() inviteUserDto: InviteUserDto) {
     return this.userService.send_invite_user_email(inviteUserDto);
