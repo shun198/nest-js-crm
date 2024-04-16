@@ -114,6 +114,8 @@ export class UserService {
     return updatedUser;
   }
 
+  // 後でtransactionを追加する
+  // https://www.prisma.io/docs/orm/prisma-client/queries/transactions
   async send_invite_user_email(data: InviteUserDto) {
     const existingEmailUser = await this.prismaService.user.findUnique({
       where: {
@@ -145,9 +147,6 @@ export class UserService {
       },
     });
     const url = `${process.env.BASE_URL}/password/register/${token}`;
-    console.log(url);
-    // 有効期限を追加
-    // Invitationテーブルにトークンとexpiryを追加
     this.emailService.welcomeEmail(user.email, url, user.name, expiry);
   }
 
