@@ -21,6 +21,7 @@ import { UserAuthGuard } from 'src/guards/user-auth.guard';
 import { InviteUserDto } from './dto/inviteUser.dto';
 import { ChangeUserDetailsDto } from './dto/changeUserDetails.dto';
 import { SendResetPasswordMailDto } from './dto/sendResetPasswordMail.dto';
+import { ResetPasswordDto } from './dto/resetPassword.dto';
 
 @ApiTags('users')
 @Controller('admin/users')
@@ -118,7 +119,7 @@ export class UserController {
   }
 
   @Post('send_reset_password_mail')
-  // @UseGuards(UserAuthGuard)
+  @UseGuards(UserAuthGuard)
   @HttpCode(HttpStatus.OK)
   send_reset_password_mail(
     @Body() sendResetPasswordMailDto: SendResetPasswordMailDto,
@@ -128,8 +129,8 @@ export class UserController {
 
   @Post('reset_password')
   @HttpCode(HttpStatus.OK)
-  reset_password(@Body() changePasswordDto: ChangePasswordDto) {
-    return this.userService.change_password(changePasswordDto);
+  reset_password(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.userService.reset_password(resetPasswordDto);
   }
 
   @Post('check_invite_user_token')

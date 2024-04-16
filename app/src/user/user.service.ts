@@ -18,6 +18,7 @@ import { REQUEST } from '@nestjs/core';
 import { ChangeUserDetailsDto } from './dto/changeUserDetails.dto';
 import { SendResetPasswordMailDto } from './dto/sendResetPasswordMail.dto';
 import { generate_token } from '../common/create-token';
+import { ResetPasswordDto } from './dto/resetPassword.dto';
 
 // https://stackoverflow.com/questions/54979729/howto-get-req-user-in-services-in-nest-js
 // https://docs.nestjs.com/fundamentals/injection-scopes#request-provider
@@ -168,7 +169,7 @@ export class UserService {
     console.log(data);
     // 招待トークンが存在するか、トークンの有効期限を確認する
     // パスワードを設定する
-    // is_verified=Trueにする
+    // is_verified=Trueにする, is_used=Trueにする
   }
 
   async change_password(data: ChangePasswordDto) {
@@ -220,6 +221,13 @@ export class UserService {
     });
     const url = `${process.env.BASE_URL}/password/reset/${token}`;
     this.emailService.resetPasswordEmail(user.email, url, user.name, expiry);
+  }
+
+  async reset_password(data: ResetPasswordDto) {
+    console.log(data);
+    // パスワード再設定トークンの確認
+    // パスワードを再設定
+    // is_usedをTrueにする
   }
 
   async check_invite_user_token(data: CheckTokenDto) {
