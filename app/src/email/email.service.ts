@@ -20,18 +20,22 @@ export class EmailService {
     });
   }
 
-  async resetPasswordEmail(data) {
-    const { name, email, link } = data;
-
-    const subject = `Company: Reset Password`;
+  async resetPasswordEmail(
+    email: string,
+    url: string,
+    name: string,
+    expiry: Date,
+  ) {
+    const subject = `パスワードを再設定してください`;
 
     await this.mailerService.sendMail({
       to: email,
       subject,
       template: './reset-password',
       context: {
-        link,
+        url,
         name,
+        expiry,
       },
     });
   }

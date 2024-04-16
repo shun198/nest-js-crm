@@ -9,7 +9,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/createUser.dto';
 import { EmailService } from '../email/email.service';
 import { InviteUserDto } from './dto/inviteUser.dto';
-import { comparePassword, encodePassword } from '../common/bcrypt';
+import { encodePassword } from '../common/bcrypt';
 import { VerifyUserDto } from './dto/verifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
@@ -165,19 +165,10 @@ export class UserService {
   }
 
   async verify_user(data: VerifyUserDto) {
-    const user = await this.prismaService.user.findUnique({
-      where: { employee_number: data.employee_number },
-    });
-    if (user) {
-      const matched = await comparePassword(data.password, user.password);
-      if (!matched) {
-        throw new BadRequestException(
-          '社員番号またはパスワードが間違っています',
-        );
-      }
-    } else {
-      throw new BadRequestException('社員番号またはパスワードが間違っています');
-    }
+    console.log(data);
+    // 招待トークンが存在するか、トークンの有効期限を確認する
+    // パスワードを設定する
+    // is_verified=Trueにする
   }
 
   async change_password(data: ChangePasswordDto) {
@@ -197,11 +188,38 @@ export class UserService {
   }
 
   async send_reset_password_mail(data: SendResetPasswordMailDto) {
-    console.log(data);
     // トークンを生成する
+    const existingUser = await this.prismaService.user.findUnique({
+      where: {
+        email: data.email,
+      },
+    });
+    if (!existingUser) {
+      throw new NotFoundException(
+        '該当するメールアドレスのユーザは存在しません',
+      );
+    }
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email: data.email,
+      },
+    });
     const token: string = generate_token(32);
+    const now: Date = new Date();
+    const expiry: Date = new Date(now.getTime() + 0.5 * 60 * 60 * 1000);
+    await this.prismaService.passwordReset.create({
+      data: {
+        token,
+        expiry,
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
     const url = `${process.env.BASE_URL}/password/reset/${token}`;
-    console.log(url);
+    this.emailService.resetPasswordEmail(user.email, url, user.name, expiry);
   }
 
   async check_invite_user_token(data: CheckTokenDto) {

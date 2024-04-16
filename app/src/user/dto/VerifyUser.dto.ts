@@ -1,15 +1,19 @@
-import { IsString, MaxLength, Validate } from 'class-validator';
+import { IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmployeeNumber } from '../../common/validators';
 
 export class VerifyUserDto {
   @ApiProperty()
   @IsString()
-  @Validate(IsEmployeeNumber)
-  employee_number: string;
+  @MaxLength(255)
+  password: string;
 
   @ApiProperty()
   @IsString()
   @MaxLength(255)
-  password: string;
+  confirm_password: string;
+
+  @ApiProperty()
+  @IsString()
+  @MaxLength(255)
+  token: string;
 }

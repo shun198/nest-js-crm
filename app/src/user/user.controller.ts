@@ -118,7 +118,7 @@ export class UserController {
   }
 
   @Post('send_reset_password_mail')
-  @UseGuards(UserAuthGuard)
+  // @UseGuards(UserAuthGuard)
   @HttpCode(HttpStatus.OK)
   send_reset_password_mail(
     @Body() sendResetPasswordMailDto: SendResetPasswordMailDto,
