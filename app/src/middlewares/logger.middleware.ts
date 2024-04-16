@@ -1,5 +1,6 @@
-import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
+import { Injectable, NestMiddleware, Logger, HttpStatus } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import { sendSlackNotification } from 'src/common/slack';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -10,12 +11,28 @@ export class LoggerMiddleware implements NestMiddleware {
     // ログレベル、ハンドラー名、時刻、ログIDを追加したい
     response.on('finish', () => {
       const { statusCode } = response;
+      let message = '';
       if (session['user']) {
         this.logger.log(
-          `${ip} ${method} 社員番号:${session['user'].employee_number} ${originalUrl} ${statusCode}`,
+          `${ip} 社員番号:${session['user'].employee_number}${method}  ${originalUrl} ${statusCode}`,
         );
+        message = `${ip} 社員番号:${session['user'].employee_number}${method}  ${originalUrl} ${statusCode}`;
       } else {
-        this.logger.log(`${ip} ${method} ${originalUrl} ${statusCode}`);
+        this.logger.log(
+          `${ip} 未ログイン ${method} ${originalUrl} ${statusCode}`,
+        );
+        message = `${ip} 未ログイン ${method} ${originalUrl} ${statusCode}`;
+      }
+      if (statusCode < HttpStatus.BAD_REQUEST) {
+        this.logger.log(message);
+      } else if (
+        statusCode <= HttpStatus.BAD_REQUEST &&
+        statusCode < HttpStatus.INTERNAL_SERVER_ERROR
+      ) {
+        this.logger.warn(message);
+      } else {
+        this.logger.error(message);
+        sendSlackNotification(message);
       }
     });
     next();
