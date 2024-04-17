@@ -12,7 +12,6 @@ import { encodePassword } from '../common/bcrypt';
 import { VerifyUserDto } from './dto/verifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
-import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
 import { ChangeUserDetailsDto } from './dto/changeUserDetails.dto';
 import { SendResetPasswordMailDto } from './dto/sendResetPasswordMail.dto';
@@ -27,7 +26,7 @@ export class UserService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly emailService: EmailService,
-    @Inject(REQUEST) private request: Request,
+    @Inject(REQUEST) private request,
   ) {}
 
   async findAll() {
@@ -48,9 +47,9 @@ export class UserService {
   }
 
   async user_info() {
-    if (this.request.session['user']) {
+    if (this.request.session.user.id) {
       const user = await this.prismaService.user.findUnique({
-        where: { id: this.request.session['user'].id },
+        where: { id: this.request.session.user.id },
       });
       return user;
     }
@@ -64,7 +63,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException(`ID:${id}を持つユーザは存在しません`);
     }
-    if (user.id === this.request.session['user'].id) {
+    if (user.id === this.request.session.user.id) {
       throw new BadRequestException('自身を無効化することはできません');
     }
     await this.prismaService.user.update({
@@ -155,7 +154,7 @@ export class UserService {
     //requestからユーザを取得し、ユーザとパスワードが一致していなかったら400を返す処理を書く
     //一致したことを確認できたらパスワードを変更する
     await this.prismaService.user.update({
-      where: { id: this.request.session['user'].id },
+      where: { id: this.request.session.user.id },
       data: {
         password: await encodePassword(data.password),
       },
