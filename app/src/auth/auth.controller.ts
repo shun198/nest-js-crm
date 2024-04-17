@@ -7,14 +7,14 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { LogInUserDto } from './dto/loginUser.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { LocalStrategy } from '../common/localStrategy';
 
 @ApiTags('login')
 @Controller()
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private localStrategy: LocalStrategy) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
@@ -23,7 +23,7 @@ export class AuthController {
     @Req() request: any,
     @Res() response: any,
   ) {
-    const user = await this.authService.validateUser(
+    const user = await this.localStrategy.validate(
       logInUserDto.employee_number,
       logInUserDto.password,
     );

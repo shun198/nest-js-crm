@@ -13,7 +13,7 @@ export class LoggerMiddleware implements NestMiddleware {
       const { statusCode } = response;
       let message = '';
       if (session['user']) {
-        message = `${ip} 社員番号:${session['user'].employee_number}${method}  ${originalUrl} ${statusCode}`;
+        message = `${ip} 社員番号:${session['user'].employee_number} ${method} ${originalUrl} ${statusCode}`;
       } else {
         message = `${ip} 未ログイン ${method} ${originalUrl} ${statusCode}`;
       }
