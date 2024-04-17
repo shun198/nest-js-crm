@@ -5,10 +5,13 @@ import {
   UnauthorizedException,
   ForbiddenException,
 } from '@nestjs/common';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AdminAuthGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.session && request.session.user;
     // https://stackoverflow.com/questions/75004427/how-to-throw-error-using-nest-js-guards-without-using-any-authentication-module

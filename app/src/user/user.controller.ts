@@ -30,7 +30,7 @@ export class UserController {
   @Get()
   @UseGuards(AdminAuthGuard)
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'ユーザを一覧表示',
     content: {
       'application/json': {
