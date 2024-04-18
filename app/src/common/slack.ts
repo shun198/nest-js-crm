@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common';
 
 export async function sendSlackNotification(message: string) {
   const webhookUrl: string = process.env.SLACK_WEBHOOK_URL;
-  const logger: Logger = new Logger('HTTP');
+  const logger = new Logger('HTTP');
 
   try {
     await axios.post(webhookUrl, { text: message });
