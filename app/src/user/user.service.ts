@@ -17,6 +17,8 @@ import { ChangeUserDetailsDto } from './dto/changeUserDetails.dto';
 import { SendResetPasswordMailDto } from './dto/sendResetPasswordMail.dto';
 import { generate_token } from '../common/create-token';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
+import { Request } from 'express';
+import { User } from '@prisma/client';
 
 // https://stackoverflow.com/questions/54979729/howto-get-req-user-in-services-in-nest-js
 // https://docs.nestjs.com/fundamentals/injection-scopes#request-provider
@@ -26,7 +28,7 @@ export class UserService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly emailService: EmailService,
-    @Inject(REQUEST) private request,
+    @Inject(REQUEST) private request: Request,
   ) {}
 
   async findAll() {
@@ -47,9 +49,10 @@ export class UserService {
   }
 
   async user_info() {
-    if (this.request.session.user.id) {
-      const user = await this.prismaService.user.findUnique({
-        where: { id: this.request.session.user.id },
+    const session = this.request.session['user'].id;
+    if (session) {
+      const user: User = await this.prismaService.user.findUnique({
+        where: { id: session },
       });
       return user;
     }
@@ -57,13 +60,13 @@ export class UserService {
   }
 
   async toggle_user_active(id: number) {
-    const user = await this.prismaService.user.findUnique({
+    const user: User = await this.prismaService.user.findUnique({
       where: { id },
     });
     if (!user) {
       throw new NotFoundException(`ID:${id}を持つユーザは存在しません`);
     }
-    if (user.id === this.request.session.user.id) {
+    if (user.id === this.request.session['user'].id) {
       throw new BadRequestException('自身を無効化することはできません');
     }
     await this.prismaService.user.update({
@@ -75,13 +78,13 @@ export class UserService {
   }
 
   async change_user_details(id: number, data: ChangeUserDetailsDto) {
-    const existingUser = await this.prismaService.user.findUnique({
+    const existingUser: User = await this.prismaService.user.findUnique({
       where: { id },
     });
     if (!existingUser) {
       throw new NotFoundException(`ID:${id}を持つユーザは存在しません`);
     }
-    const updatedUser = await this.prismaService.user.update({
+    const updatedUser: User = await this.prismaService.user.update({
       where: { id },
       data: data,
     });
@@ -91,7 +94,7 @@ export class UserService {
   // 後でtransactionを追加する
   // https://www.prisma.io/docs/orm/prisma-client/queries/transactions
   async send_invite_user_email(data: InviteUserDto) {
-    const existingEmailUser = await this.prismaService.user.findUnique({
+    const existingEmailUser: User = await this.prismaService.user.findUnique({
       where: {
         email: data.email,
       },
@@ -104,7 +107,9 @@ export class UserService {
       ...data,
       password: generate_token(32),
     };
-    const user = await this.prismaService.user.create({ data: updatedData });
+    const user: User = await this.prismaService.user.create({
+      data: updatedData,
+    });
     // トークンを生成する
     const token: string = generate_token(32);
     const now: Date = new Date();
@@ -120,12 +125,12 @@ export class UserService {
         },
       },
     });
-    const url = `${process.env.BASE_URL}/password/register/${token}`;
+    const url: string = `${process.env.BASE_URL}/password/register/${token}`;
     this.emailService.welcomeEmail(user.email, url, user.name, expiry);
   }
 
   async resend_invitation(id: number) {
-    const user = await this.prismaService.user.findUnique({
+    const user: User = await this.prismaService.user.findUnique({
       where: { id },
     });
     if (!user) {
@@ -154,7 +159,7 @@ export class UserService {
     //requestからユーザを取得し、ユーザとパスワードが一致していなかったら400を返す処理を書く
     //一致したことを確認できたらパスワードを変更する
     await this.prismaService.user.update({
-      where: { id: this.request.session.user.id },
+      where: { id: this.request.session['user'].id },
       data: {
         password: await encodePassword(data.password),
       },
@@ -163,7 +168,7 @@ export class UserService {
 
   async send_reset_password_mail(data: SendResetPasswordMailDto) {
     // トークンを生成する
-    const existingUser = await this.prismaService.user.findUnique({
+    const existingUser: User = await this.prismaService.user.findUnique({
       where: {
         email: data.email,
       },
@@ -173,7 +178,7 @@ export class UserService {
         '該当するメールアドレスのユーザは存在しません',
       );
     }
-    const user = await this.prismaService.user.findUnique({
+    const user: User = await this.prismaService.user.findUnique({
       where: {
         email: data.email,
       },
@@ -192,7 +197,7 @@ export class UserService {
         },
       },
     });
-    const url = `${process.env.BASE_URL}/password/reset/${token}`;
+    const url: string = `${process.env.BASE_URL}/password/reset/${token}`;
     this.emailService.resetPasswordEmail(user.email, url, user.name, expiry);
   }
 
@@ -207,7 +212,7 @@ export class UserService {
     // tokenの値から一致するUserを取得。なかったら400を返す
     // select_relatedを使って取得する
     // 有効期限が切れている、もしくは使用フラグがtrueだったら400を返す
-    const check = data.token;
+    const check: string = data.token;
     if (!check) {
       return null;
     }
@@ -218,7 +223,7 @@ export class UserService {
     // tokenの値から一致するUserを取得。なかったら400を返す
     // select_relatedを使って取得する
     // 有効期限が切れている、もしくは使用フラグがtrueだったら400を返す
-    const check = data.token;
+    const check: string = data.token;
     if (!check) {
       return null;
     }

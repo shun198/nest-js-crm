@@ -10,6 +10,7 @@ import {
 import { LogInUserDto } from './dto/loginUser.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { LocalStrategy } from '../common/localStrategy';
+import { User } from '@prisma/client';
 
 @ApiTags('login')
 @Controller()
@@ -23,7 +24,7 @@ export class AuthController {
     @Req() request: any,
     @Res() response: any,
   ) {
-    const user = await this.localStrategy.validate(
+    const user: User = await this.localStrategy.validate(
       logInUserDto.employee_number,
       logInUserDto.password,
     );
