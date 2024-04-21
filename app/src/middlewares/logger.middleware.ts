@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware, Logger, HttpStatus } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { sendSlackNotification } from 'src/common/slack';
+// import { sendSlackNotification } from 'src/common/slack';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -26,7 +26,8 @@ export class LoggerMiddleware implements NestMiddleware {
         this.logger.warn(message);
       } else {
         this.logger.error(message);
-        sendSlackNotification(message);
+        // https://github.com/nestjs/docs.nestjs.com/issues/215#issuecomment-774504957
+        // sendSlackNotification(message);
       }
     });
     next();

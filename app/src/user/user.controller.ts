@@ -58,8 +58,9 @@ export class UserController {
     const user = await this.userService.user_info();
     if (!user) {
       response.status(HttpStatus.OK).json({ name: null, role: null });
+    } else {
+      response.status(HttpStatus.OK).json({ name: user.name, role: user.role });
     }
-    response.status(HttpStatus.OK).json({ name: user.name, role: user.role });
   }
 
   @Patch(':id/toggle_user_active')

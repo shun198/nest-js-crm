@@ -49,10 +49,9 @@ export class UserService {
   }
 
   async user_info() {
-    const session = this.request.session['user'].id;
-    if (session) {
+    if (this.request.session['user']) {
       const user: User = await this.prismaService.user.findUnique({
-        where: { id: session },
+        where: { id: this.request.session['user'].id },
       });
       return user;
     }
