@@ -15,8 +15,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('ヘルスチェックの戻り値を返す', () => {
+      expect(appController.healthCheck()).toEqual({ msg: 'pass' });
     });
   });
 });

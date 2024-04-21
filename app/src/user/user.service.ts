@@ -5,7 +5,7 @@ import {
   Inject,
   Scope,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/createUser.dto';
 import { EmailService } from '../email/email.service';
 import { InviteUserDto } from './dto/inviteUser.dto';
@@ -134,6 +134,7 @@ export class UserService {
     const token = generate_token(32);
     console.log(token);
     // 有効期限を追加
+    // await this.prismaService.invitation.create({data});
     // Invitationテーブルにトークンとexpiryを追加
     this.emailService.welcomeEmail(data);
   }
