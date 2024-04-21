@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/createUser.dto';
 import { VerifyUserDto } from './dto/verifyUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CheckTokenDto } from './dto/checkToken.dto';
@@ -21,6 +20,7 @@ import { UserAuthGuard } from '../guards/user-auth.guard';
 import { InviteUserDto } from './dto/inviteUser.dto';
 import { ChangeUserDetailsDto } from './dto/changeUserDetails.dto';
 import { SendResetPasswordMailDto } from './dto/sendResetPasswordMail.dto';
+import { ResetPasswordDto } from './dto/resetPassword.dto';
 
 @ApiTags('users')
 @Controller('admin/users')
@@ -30,7 +30,7 @@ export class UserController {
   @Get()
   @UseGuards(AdminAuthGuard)
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'ユーザを一覧表示',
     content: {
       'application/json': {
@@ -41,6 +41,7 @@ export class UserController {
             employee_number: '00000001',
             email: 'test_user_01@example.com',
             is_active: true,
+            is_verified: true,
             createdAt: '2024-03-08T00:33:27.790Z',
             updatedAt: '2024-03-08T00:33:27.790Z',
           },
@@ -66,12 +67,6 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   toggle_user_active(@Param('id') id: string) {
     return this.userService.toggle_user_active(Number(id));
-  }
-
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
   }
 
   @Patch(':id/change_user_details')
@@ -128,8 +123,8 @@ export class UserController {
 
   @Post('reset_password')
   @HttpCode(HttpStatus.OK)
-  reset_password(@Body() changePasswordDto: ChangePasswordDto) {
-    return this.userService.change_password(changePasswordDto);
+  reset_password(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.userService.reset_password(resetPasswordDto);
   }
 
   @Post('check_invite_user_token')

@@ -1,7 +1,7 @@
 import { IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class VerifyUserDto {
+export class ResetPasswordDto {
   @ApiProperty()
   @IsString()
   @MaxLength(255)

@@ -6,19 +6,17 @@ import {
   HttpStatus,
   Req,
   Res,
-  UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { LogInUserDto } from './dto/loginUser.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { LocalAuthGuard } from '../guards/local-auth.guard';
+import { LocalStrategy } from '../common/localStrategy';
+import { User } from '@prisma/client';
 
 @ApiTags('login')
 @Controller()
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private localStrategy: LocalStrategy) {}
 
-  @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async logIn(
@@ -26,7 +24,7 @@ export class AuthController {
     @Req() request: any,
     @Res() response: any,
   ) {
-    const user = await this.authService.validateUser(
+    const user: User = await this.localStrategy.validate(
       logInUserDto.employee_number,
       logInUserDto.password,
     );

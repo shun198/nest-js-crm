@@ -1,49 +1,41 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { InviteUserDto } from 'src/user/dto/inviteUser.dto';
 
 @Injectable()
 export class EmailService {
   constructor(private readonly mailerService: MailerService) {}
-
-  async welcomeEmail(data: InviteUserDto) {
-    const subject = `ようこそ`;
+  // https://notiz.dev/blog/send-emails-with-nestjs
+  async welcomeEmail(email: string, url: string, name: string, expiry: Date) {
+    const subject = `管理システムへようこそ`;
 
     await this.mailerService.sendMail({
-      to: data.email,
+      to: email,
       subject,
       template: './welcome',
+      context: {
+        url,
+        name,
+        expiry,
+      },
     });
   }
 
-  async resetPasswordEmail(data) {
-    const { name, email, link } = data;
-
-    const subject = `Company: Reset Password`;
+  async resetPasswordEmail(
+    email: string,
+    url: string,
+    name: string,
+    expiry: Date,
+  ) {
+    const subject = `パスワードを再設定してください`;
 
     await this.mailerService.sendMail({
       to: email,
       subject,
       template: './reset-password',
       context: {
-        link,
+        url,
         name,
-      },
-    });
-  }
-
-  async verifyUserEmail(data) {
-    const { name, email, otp } = data;
-
-    const subject = `Company: OTP To Verify Email`;
-
-    await this.mailerService.sendMail({
-      to: email,
-      subject,
-      template: './verify-user',
-      context: {
-        otp,
-        name,
+        expiry,
       },
     });
   }
